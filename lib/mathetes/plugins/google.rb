@@ -35,7 +35,7 @@ module Mathetes; module Plugins
 
         arg = CGI.escape( arg )
 
-        open( "http://www.google.com/search?q=#{ CGI.escape( args ) }&safe=active" ) do |html|
+        open( "http://www.google.de/search?q=#{ CGI.escape( args ) }&safe=active" ) do |html|
           counter = 0
           html.read.scan /<a href="?([^"]+)" class=l.*?>(.+?)<\/a>/m do |match|
             url, title = match
