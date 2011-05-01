@@ -152,6 +152,10 @@ module Mathetes
       @irc.send_privmsg( message, destination )
     end
 
+    def action( message, destination )
+      @irc.send_action( message, destination )
+    end
+
     def ban( user, channel, seconds = 24 * 60 * 60 )
       @irc.send_raw( 'MODE', channel, '+b', user.hostmask.to_s )
       Thread.new do
