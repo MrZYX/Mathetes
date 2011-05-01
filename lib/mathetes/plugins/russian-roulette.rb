@@ -14,11 +14,12 @@ module Mathetes; module Plugins
         "Good thing these aren't real bullets...",
         "That's gotta hurt...",
     ]
-    ALSO_BAN = true
+    ALSO_BAN = false
     BAN_TIME = 60 # seconds
 
     def initialize( mathetes )
       @mathetes = mathetes
+      @bullets = 6
       @mathetes.hook_privmsg(
         :regexp => /^!roul(ette)?\b/
       ) do |message|
@@ -29,10 +30,12 @@ module Mathetes; module Plugins
     def pull_trigger( message )
       message.answer '*spin* ...'
       sleep 4
-      has_bullet = ( rand( 6 ) == 0 )
+      has_bullet = ( rand( @bullets ) == 0 )
       if ! has_bullet
         message.answer "-click-"
+        @bullets -= 1
       else
+        @bullets = 6
         if ALSO_BAN
           @mathetes.ban(
             message.from,
