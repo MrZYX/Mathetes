@@ -7,7 +7,7 @@ module Mathetes
       def initialize(mathetes)
         mathetes.hook_privmsg(:regexp => /^!commit\b/) do |msg|
           open 'http://whatthecommit.com/' do |io|
-            msg.answer Nokogiri::HTML(io).css('#content > p').text.strip
+            msg.answer Nokogiri::HTML(io).css('#content > p:first').text.strip
           end
         end
       end
