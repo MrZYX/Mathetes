@@ -16,27 +16,6 @@ module Mathetes; module Plugins
 'http://pipes.yahoo.com/pipes/pipe.run?_id=635e9046ec5d356d5048f2f702332ebb&_render=rss' => {
           :channels => [ '#diaspora-de' ],
           :interval => 60*15,
-      },
-      'http://groups.google.com/group/datamapper/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#datamapper' ],
-        :interval => 15 * 60,
-      },
-      'http://groups.google.com/group/rdbi-devel/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#ruby-dbi' ],
-        :interval => 15 * 60,
-      },
-      'http://groups.google.com/group/rdbi-devel/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#ruby-dbi' ],
-        :interval => 15 * 60,
-      },
-      'http://groups.google.com/group/sinatrarb/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#sinatra' ],
-        :interval => 15 * 60,
-      },
-      'http://groups.google.com/group/rubyversionmanager/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#rvm' ],
-        :interval => 15 * 60,
-      },
     }
 
     def initialize( mathetes )
