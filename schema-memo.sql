@@ -40,7 +40,8 @@ CREATE TABLE memos (
     time_sent timestamp without time zone DEFAULT now() NOT NULL,
     time_told timestamp without time zone,
     message character varying(4096),
-    recipient_regexp character varying(128)
+    recipient_regexp character varying(128),
+    channel character varying(255)
 );
 
 

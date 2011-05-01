@@ -29,10 +29,13 @@ module Mathetes; module Plugins
         handle_join message
       end
 
-      @dbh = DBI.connect( "DBI:Pg:reby-memo:localhost", "memo", "memo" )
+      @dbh = DBI.connect( "DBI:Pg:reby-memo:localhost", "memo2", "memo" )
     end
 
-    def memos_for( recipient )
+    def memos_for( recipient, channel )
+      if channel =~ /\$(\d)/
+        channel = $1.to_s
+      end 
       @dbh.select_all(
         %{
           SELECT
@@ -46,9 +49,11 @@ module Mathetes; module Plugins
               OR ? ~* m.recipient_regexp
             )
             AND m.time_told IS NULL
+            AND (m.channel IS NULL OR m.channel = lower( ? ))
         },
         recipient,
-        recipient
+        recipient,
+        channel
       )
     end
 
@@ -57,6 +62,7 @@ module Mathetes; module Plugins
 
       sender = nick = privmsg.from.nick
       recipient, message = args.split( /\s+/, 2 )
+      channel = privmsg.channel.name
 
       if sender.nil? || recipient.nil? || message.nil? || recipient.empty? || message.empty?
         privmsg.answer "#{nick}: !memo <recipient> <message>"
@@ -66,21 +72,23 @@ module Mathetes; module Plugins
       if recipient =~ %r{^/(.*)/$}
         recipient_regexp = Regexp.new $1
         @dbh.do(
-          "INSERT INTO memos ( sender, recipient_regexp, message ) VALUES ( ?, ?, ? )",
+          "INSERT INTO memos ( sender, recipient_regexp, message, channel ) VALUES ( ?, ?, ?, ? )",
           sender,
           recipient_regexp.source,
-          message
+          message,
+          channel.to_s
         )
         privmsg.answer "#{nick}: Memo recorded for /#{recipient_regexp.source}/."
       else
-        if memos_for( recipient ).size >= MAX_MEMOS_PER_PERSON
+        if memos_for( recipient, channel ).size >= MAX_MEMOS_PER_PERSON
           privmsg.answer "The inbox of #{recipient} is full."
         else
           @dbh.do(
-            "INSERT INTO memos ( sender, recipient, message ) VALUES ( ?, ?, ? )",
+            "INSERT INTO memos ( sender, recipient, message, channel ) VALUES ( ?, ?, ?, ? )",
             sender,
             recipient,
-            message
+            message,
+            channel.to_s
           )
           privmsg.answer "#{nick}: Memo recorded for #{recipient}."
         end
@@ -91,7 +99,13 @@ module Mathetes; module Plugins
       nick = message.from.nick
       return  if IGNORED.include?( nick )
 
-      memos = memos_for( nick )
+      if message.channel
+        dest = message.channel.name
+      else
+        dest = nil
+      end
+
+      memos = memos_for( nick, dest )
       if memos.size <= PUBLIC_READING_THRESHOLD && message.channel
         dest = message.channel.name
       else
@@ -118,9 +132,10 @@ module Mathetes; module Plugins
 
     def handle_join( message )
       nick = message.from.nick
+      channel = message.channel.name
       return  if IGNORED.include?( nick )
 
-      memos = memos_for( nick )
+      memos = memos_for( nick, channel )
       if memos.size > 0
         @mathetes.say "You have #{memos.size} memo(s).  Speak publicly in a channel to retrieve them.", nick
       end
