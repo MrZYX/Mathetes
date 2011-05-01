@@ -6,26 +6,57 @@ module Mathetes; module Plugins
 
     def initialize( mathetes )
       @h = MuPStore.new( "key-value.pstore" )
-      mathetes.hook_privmsg( :regexp => /^!i(nfo)?\b/ ) do |message|
-        if message.text =~ /^\S+\s+(.+?)=(.+)/
-          key, value = $1.strip, $2.strip
-          @h.transaction {
-            @h[ { :channel => message.channel.to_s, :key => key }.inspect ] = value
-          }
-          message.answer "Set '#{key}'."
-        elsif message.text =~ /^\S+\s+(.+)/
-          key = $1.strip
-          value = nil
-          @h.transaction {
-            value = @h[ { :channel => message.channel.to_s, :key => key }.inspect ]
-          }
-          if value
-            message.answer value
+      @mathetes = mathetes
+      mathetes.hook_privmsg( :regexp => /^(!i(nfo)?\b|\?\w+)/ ) do |message|
+        if message.text =~ /^(!i\s+|!info\s+|\?)(\w+)=(.+)/
+          if !message.channel.nil?
+	    key, value = $2.strip, $3.strip
+            @h.transaction {
+              @h[ { :channel => message.channel.to_s, :key => key }.inspect ] = value
+            }
+            message.answer "Set '#{key}'."
           else
-            message.answer "No value for key '#{key}'."
+            @mathetes.say( "Hm?", message.from.nick )
           end
+        elsif message.text =~ /^(!i\s+|!info\s+|\?)(\w+)/
+          if !message.channel.nil?
+            key = $2.strip
+            value = nil
+            @h.transaction {
+              value = @h[ { :channel => message.channel.to_s, :key => key }.inspect ]
+            }
+            if value
+              message.answer value
+            else
+              message.answer "No value for key '#{key}'."
+            end
+          else
+            @mathetes.say("Hm?", message.from.nick )
+          end
+        elsif message.text =~ /^(!i\s+|!info\s+|\?)(#[a-zA-Z0-9_-]+):(\w+?)=(.+)/
+          chan, key, value = $2.strip, $3.strip, $4.strip
+          @h.transaction {
+            @h[ { :channel => chan.to_s, :key => key }.inspect ] = value
+          }
+          @mathetes.say( "Set '#{key}' for #{chan}", message.from.nick )
+        elsif message.text =~ /^(!i\s+|!info\s+|\?)(#[a-zA-Z0-9_-]+):(\w+)/
+         chan = $2.strip
+         key = $3.strip
+         value = nil
+         @h.transaction {
+           value = @h[ { :channel => chan.to_s, :key => key }.inspect ]
+         }
+         if value
+          @mathetes.say( value, chan )
+         else
+          @mathetes.say( "No value for key '#{key}' for  #{chan}", message.from.nick )
+         end
         else
-          message.answer "Usage: !i key = value    !i key"
+          if message.channel.nil?
+            @mathetes.say( "Usage: !i chan:key = value    !i chan:key", message.from.nick )
+          else
+            message.answer "Usage: !i key = value    !i key"
+          end
         end
       end
     end
