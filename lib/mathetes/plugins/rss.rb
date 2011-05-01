@@ -9,37 +9,13 @@ module Mathetes; module Plugins
   class RSS
 
     FEEDS = {
-      'http://forum.webbynode.com/rss.php' => {
-        :channels => [ '#webbynode', ],
-        :interval => 60 * 30,
-      },
-      'http://blog.webbynode.com/feed/rss/' => {
-        :channels => [ '#webbynode', ],
-        :interval => 60 * 60,
-      },
-      'http://status.webbynode.com/feed/' => {
-        :channels => [ '#webbynode', ],
-        :interval => 60 * 60,
-      },
-      'http://groups.google.com/group/ramaze/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#ramaze', ],
-        :interval => 60 * 60,
-      },
-      'http://groups.google.com/group/nanoc/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#nanoc', ],
-        :interval => 60 * 60,
-      },
-      'http://www.google.com/alerts/feeds/13535865067391668311/1085272382843306248' => {
-        :channels => [ '#ramaze', ],
-        :interval => 60 * 60,
-      },
-      'http://projects.stoneship.org/trac/nanoc/timeline?ticket=on&milestone=on&wiki=on&max=50&daysback=90&format=rss' => {
-        :channels => [ '#nanoc', ],
-        :interval => 5 * 60,
-      },
-      'http://groups.google.com/group/diaspora-dev/feed/rss_v2_0_msgs.xml' => {
-        :channels => [ '#diaspora-dev' ],
-        :interval => 15 * 60,
+#      'https://blog.geraspora.de/feed' => {
+#          :channels => [ '#diaspora-de' ],
+#          :interval => 60*60,
+#      },
+'http://pipes.yahoo.com/pipes/pipe.run?_id=635e9046ec5d356d5048f2f702332ebb&_render=rss' => {
+          :channels => [ '#diaspora-de' ],
+          :interval => 60*15,
       },
       'http://groups.google.com/group/datamapper/feed/rss_v2_0_msgs.xml' => {
         :channels => [ '#datamapper' ],
