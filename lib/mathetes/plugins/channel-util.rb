@@ -3,7 +3,8 @@ module Mathetes; module Plugins
   class ChannelUtil
 
     ADMINS = [
-      'Pistos',
+      'MrZYX',
+      'DenSchub'
     ]
 
     def initialize( mathetes )
@@ -16,16 +17,20 @@ module Mathetes; module Plugins
         end
       end
 
-      mathetes.hook_privmsg( :regexp => /^!join (#[A-z0-9_-]+)/ ) do |message|
-        channel = SilverPlatter::IRC::Channel.new( $1 )
-        break  if ! ADMINS.include?( message.from.nick )
-        @mathetes.join_channels( [ channel ] )
+      mathetes.hook_privmsg( :regexp => /^!join\b/ ) do |message|
+        if message.text =~ /^!join (#[A-z0-9_-]+)/
+	  channel = SilverPlatter::IRC::Channel.new( $1 )
+          break  if ! ADMINS.include?( message.from.nick )
+          @mathetes.join_channels( [ channel ] )
+        end
       end
 
-      mathetes.hook_privmsg( :regexp => /^!part (#[A-z0-9_-]+)/ ) do |message|
-        channel = SilverPlatter::IRC::Channel.new( $1 )
-        break  if ! ADMINS.include?( message.from.nick )
-        @mathetes.part_channels( [ channel ] )
+      mathetes.hook_privmsg( :regexp => /^!part\b/ ) do |message|
+        if message.text =~ /^!part (#[A-z0-9_-]+)/
+          channel = SilverPlatter::IRC::Channel.new( $1 )
+          break  if ! ADMINS.include?( message.from.nick )
+          @mathetes.part_channels( [ channel ] )
+        end
       end
     end
 
