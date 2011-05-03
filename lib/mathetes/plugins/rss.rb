@@ -16,6 +16,7 @@ module Mathetes; module Plugins
 'http://pipes.yahoo.com/pipes/pipe.run?_id=635e9046ec5d356d5048f2f702332ebb&_render=rss' => {
           :channels => [ '#diaspora-de' ],
           :interval => 60*15,
+       }
     }
 
     def initialize( mathetes )
