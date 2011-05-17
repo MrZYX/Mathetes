@@ -7,7 +7,10 @@ module Mathetes
       def initialize(mathetes)
         mathetes.hook_privmsg(:regexp => /^!oktoupdate\b/) do |msg|
           open 'http://isitoktoupdatemydiaspora.tk/' do |io|
-            msg.answer Nokogiri::HTML(io).css('#content > h1:first').text.strip
+            n = Nokogiri::HTML(io)
+            mesg = n.css('#content > h1:first').text.strip
+            date = n.css('#content > p:first').text.strip
+            msg.answer "#{mesg} - #{date}"
           end
         end
       end
