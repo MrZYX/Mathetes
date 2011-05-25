@@ -5,7 +5,7 @@ module Mathetes
   module Plugins
     class OkToUpdate
       def initialize(mathetes)
-        mathetes.hook_privmsg(:regexp => /^!oktoupdate\b/) do |msg|
+        mathetes.hook_privmsg(:regexp => /^!(isit)?okto(update|pull)(my)?(diaspora)?\b/) do |msg|
           open 'http://isitoktoupdatemydiaspora.tk/' do |io|
             n = Nokogiri::HTML(io)
             mesg = n.css('#content > h1:first').text.strip
