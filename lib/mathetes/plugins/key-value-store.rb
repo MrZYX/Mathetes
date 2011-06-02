@@ -7,6 +7,16 @@ module Mathetes; module Plugins
     def initialize( mathetes )
       @h = MuPStore.new( "key-value.pstore" )
       @mathetes = mathetes
+      mathetes.hook_privmsg( :regexp => /^!keys\b/ ) do |message|
+       keys = []
+       @h.transaction {
+         @h.roots.each { |root|
+           item = eval(root)
+           keys.push(item[:key]) if item[:channel] == message.channel.to_s
+         }
+       }
+       message.answer "I know the following keys: #{keys.sort.join(', ')}"
+      end
       mathetes.hook_privmsg( :regexp => /^(!i(nfo)?\b|\?\w+)/ ) do |message|
         if message.text =~ /^(!i\s+|!info\s+|\?)(\w+)=(.+)/
           if !message.channel.nil?
