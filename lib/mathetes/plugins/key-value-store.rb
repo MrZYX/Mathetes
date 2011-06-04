@@ -63,9 +63,9 @@ module Mathetes; module Plugins
          end
         else
           if message.channel.nil?
-            @mathetes.say( "Usage: !i chan:key = value    !i chan:key", message.from.nick )
+            @mathetes.say( "Usage: !i chan:key=value    !i chan:key", message.from.nick )
           else
-            message.answer "Usage: !i key = value    !i key"
+            message.answer "Usage: !i key=value    !i key"
           end
         end
       end
