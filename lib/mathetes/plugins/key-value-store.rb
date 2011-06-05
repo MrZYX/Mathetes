@@ -17,7 +17,7 @@ module Mathetes; module Plugins
        }
        message.answer "I know the following keys: #{keys.sort.join(', ')}"
       end
-      mathetes.hook_privmsg( :regexp => /^(!i(nfo)?\b|\?\w+)/ ) do |message|
+      mathetes.hook_privmsg( :regexp => /^(!i(nfo)?\b|\?\w+)(\s+\S+)?/ ) do |message|
         if message.text =~ /^(!i\s+|!info\s+|\?)(\w+)=(.+)/
           if !message.channel.nil?
 	    key, value = $2.strip, $3.strip
@@ -28,15 +28,18 @@ module Mathetes; module Plugins
           else
             @mathetes.say( "Hm?", message.from.nick )
           end
-        elsif message.text =~ /^(!i\s+|!info\s+|\?)(\w+)/
+        elsif message.text =~ /^(!i\s+|!info\s+|\?)(\w+)(\s+\S+)?/
           if !message.channel.nil?
+            to = $3.strip if $3
             key = $2.strip
             value = nil
             @h.transaction {
               value = @h[ { :channel => message.channel.to_s, :key => key }.inspect ]
             }
             if value
-              message.answer value
+              to += ": " if to
+              to = "" unless to
+              message.answer "#{to}#{value}"
             else
               message.answer "No value for key '#{key}'."
             end
