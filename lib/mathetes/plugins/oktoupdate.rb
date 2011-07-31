@@ -9,8 +9,13 @@ module Mathetes
           open 'http://isitoktoupdatemydiaspora.tk/' do |io|
             n = Nokogiri::HTML(io)
             mesg = n.css('#content > h1:first').text.strip
-            date = n.css('#content > p:first').text.strip
-            msg.answer "#{mesg} - #{date}"
+            exp = n.css('#explanation').text.gsub('Explanation:', '').strip
+            date = n.css('#updated').text.strip
+            unless exp.empty?
+              msg.answer "#{mesg} - #{exp} - #{date}"
+            else
+              msg.answer "#{mesg} - #{date}"
+            end
           end
         end
       end
