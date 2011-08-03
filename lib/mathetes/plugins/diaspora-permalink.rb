@@ -5,9 +5,11 @@ module Mathetes; module Plugins
   class DiasporaPermalink
     TRUNCATE_AFTER = 150
     def initialize( mathetes )
-      mathetes.hook_privmsg( :regexp => /http.+\/(status_messages|p)\/\d+/ ) do |message|
+      mathetes.hook_privmsg( :regexp => /http.+\/(status_messages|p|posts)\/\d+/ ) do |message|
         if message.text =~ /(http.+\/status_messages\/\d+)/
 	  link = $1.gsub('status_messages', 'p')
+        elsif message.text =~ /(http.+\/posts\/\d+)/
+          link = $1.gsub('posts', 'p')
         elsif message.text =~ /(http.+\/p\/\d+)/
           link = $1
         end
