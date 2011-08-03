@@ -13,9 +13,13 @@ module Mathetes; module Plugins
 #          :channels => [ '#diaspora-de' ],
 #          :interval => 60*60,
 #      },
-'http://pipes.yahoo.com/pipes/pipe.run?_id=635e9046ec5d356d5048f2f702332ebb&_render=rss' => {
+       'http://pipes.yahoo.com/pipes/pipe.run?_id=635e9046ec5d356d5048f2f702332ebb&_render=rss' => {
           :channels => [ '#diaspora-de' ],
           :interval => 60*15,
+       },
+       'http://pipes.yahoo.com/pipes/pipe.run?_id=5a26aa2bae3548e744a9cc4bb2dd733d&_render=rss' => {
+          :channels => [ '#owncloud' ],
+          :interval => 60*2
        }
     }
 
