@@ -20,7 +20,11 @@ module Mathetes; module Plugins
        'http://pipes.yahoo.com/pipes/pipe.run?_id=5a26aa2bae3548e744a9cc4bb2dd733d&_render=rss' => {
           :channels => [ '#owncloud' ],
           :interval => 60*2
-       }
+       },
+       'http://pipes.yahoo.com/pipes/pipe.run?_id=69161bb295c614ba7208f750f553947b&_render=rss' => {
+         :channels => [ '#unhosted' ],
+         :interval => 60*2
+      }
     }
 
     def initialize( mathetes )
