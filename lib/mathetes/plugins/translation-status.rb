@@ -1,49 +1,46 @@
+require 'net/http'
+require 'net/https'
 require 'open-uri'
 require 'nokogiri'
+require 'yaml'
 
 module Mathetes; module Plugins
   class TranslationStatus
-     PROJECT_ID = 181
+    API_KEY = "66c5e5731ada866d7a0be466f4fc4fb0abb22e76"
+    PROJECT = "3020-Diaspora"
+
     def initialize( mathetes )
       @mathetes = mathetes
       mathetes.hook_privmsg(
         :regexp => /^!(ts|trans(lation)?stat(i)?s(tics)?)\b/
       ) do |message|
-	if message.text =~ /\S+\s+([a-zA-Z_-]+)/
-          url = "http://99translations.com/public_projects/show/#{PROJECT_ID}"
-          doc = Nokogiri::HTML( open( url ) )
-          status = doc.xpath("//table/tr[td=' #{$1.strip}']/td/span").inner_text.strip
-          key = $1.strip
-          if status.nil? || status == ''
-            if key == 'en'
-              status = '100%'
-            end
-          end
-          if status.nil? || status == ''
-            if message.channel.nil?
-              @mathetes.say("There is currently no translation for #{key}. Create one! Have a look at https://github.com/diaspora/diaspora/wiki/How-to-contribute-translations", message.from.nick)
+	if message.text =~ /\S+\s+([\d\w_-]+)/
+          key = $1.strip.gsub("_", "-")
+          url = "https://webtranslateit.com/api/projects/#{API_KEY}/stats.yaml"
+          content = open(url).read
+          stats = YAML.load content
+          if key != "en" && stats.keys.include?(key)
+            stats = stats[key]
+            if stats['count_strings_done'] == stats['count_strings']
+              answer = "The translation for #{key} is complete :)."
             else
-              message.answer "There is currently no translation for #{key}. Create one! Have a look at https://github.com/diaspora/diaspora/wiki/How-to-contribute-translations"
+              answer = "The translation for #{key} has #{stats['count_strings_done']}/#{stats['count_strings']} keys done, with #{stats['count_strings_to_translate']} untranslated and #{stats['count_strings_to_proofread']} to proofread."
             end
-          elsif status == '100%'
-            if message.channel.nil?
-              @mathetes.say("The translation for #{key} is currently at #{status}", message.from.nick)
-            else
-              message.answer "The translation for #{key} is currently at #{status}"
-            end
+
+            answer += " Join the team at https://webtranslateit.com/en/projects/#{PROJECT} to further improve it!"
+          elsif key == "en"
+            answer = "English is the master translation ;)"
           else
-            if message.channel.nil?
-              @mathetes.say("The translation for #{key} is currently at #{status}. Get it to 100% at http://http://99translations.com/public_projects/show/#{PROJET_ID}", message.from.nick)
-            else
-              message.answer "The translation for #{key} is currently at #{status}. Get it to 100% at http://99translations.com/public_projects/show/#{PROJECT_ID}"
-            end
+            answer = "There so no translation for #{key} yet. Have a look at https://github.com/liamnic/IntrestIn/wiki/How-to-contribute-translations on how to create it!"
           end
         else
-          if message.channel.nil?
-            @mathetes.say("You have to provide a language code!", message.from.nick)
-          else
-            message.answer "You have to provide a language code!"
-          end
+          answer = "You have to provide a language code!"
+        end
+        
+        if message.channel.nil?
+          @mathetes.say answer, message.from.nick
+        else
+          message.answer answer
         end
       end
     end
