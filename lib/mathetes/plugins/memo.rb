@@ -1,4 +1,5 @@
 require 'm4dbi'
+require 'rdbi-driver-postgresql'
 
 module Mathetes; module Plugins
 
@@ -29,7 +30,7 @@ module Mathetes; module Plugins
         handle_join message
       end
 
-      @dbh = DBI.connect( "DBI:Pg:reby-memo:localhost", "memo2", "memo" )
+      @dbh = M4DBI.connect( RDBI::Driver::PostgreSQL, :host => "localhost", :database => "reby-memo", :user => "memo2", :password => "memo")
     end
 
     def memos_for( recipient, channel )
@@ -71,7 +72,7 @@ module Mathetes; module Plugins
 
       if recipient =~ %r{^/(.*)/$}
         recipient_regexp = Regexp.new $1
-        @dbh.do(
+        @dbh.d(
           "INSERT INTO memos ( sender, recipient_regexp, message, channel ) VALUES ( ?, ?, ?, ? )",
           sender,
           recipient_regexp.source,
@@ -83,7 +84,7 @@ module Mathetes; module Plugins
         if memos_for( recipient, channel ).size >= MAX_MEMOS_PER_PERSON
           privmsg.answer "The inbox of #{recipient} is full."
         else
-          @dbh.do(
+          @dbh.d(
             "INSERT INTO memos ( sender, recipient, message, channel ) VALUES ( ?, ?, ?, ? )",
             sender,
             recipient,
@@ -122,8 +123,8 @@ module Mathetes; module Plugins
         else
           age.gsub( /^(.*)(\d+):(\d+):(\d+)/, "\\1 \\2h \\3m \\4s" )
         end
-        @mathetes.say( "#{nick}: [#{age} ago] <#{memo['sender']}> #{memo['message']}", dest )
-        @dbh.do(
+        @mathetes.say( "#{nick}: [#{age} ago] <#{memo['sender']}> #{memo['message'].gsub(/\s(\+|-)\d{2,4}$/, "")}", dest )
+        @dbh.d(
           "UPDATE memos SET time_told = NOW() WHERE id = ?",
           memo[ 'id' ]
         )

@@ -18,7 +18,7 @@ module Mathetes; module Plugins
       end
 
       mathetes.hook_privmsg( :regexp => /^!join\b/ ) do |message|
-        if message.text =~ /^!join (#[A-z0-9_-]+)/
+        if message.text =~ /^!join (#[#A-z0-9_-]+)/
 	  channel = SilverPlatter::IRC::Channel.new( $1 )
           break  if ! ADMINS.include?( message.from.nick )
           @mathetes.join_channels( [ channel ] )
@@ -26,7 +26,7 @@ module Mathetes; module Plugins
       end
 
       mathetes.hook_privmsg( :regexp => /^!part\b/ ) do |message|
-        if message.text =~ /^!part (#[A-z0-9_-]+)/
+        if message.text =~ /^!part (#[#A-z0-9_-]+)/
           channel = SilverPlatter::IRC::Channel.new( $1 )
           break  if ! ADMINS.include?( message.from.nick )
           @mathetes.part_channels( [ channel ] )

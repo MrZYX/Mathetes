@@ -30,8 +30,10 @@ module Mathetes; module Plugins
 
     def google_count( terms )
       terms = CGI.escape( terms )
-      doc = Nokogiri::HTML( open( "http://www.google.com/search?q=#{terms}" ) )
-      doc.at("div[@id*=resultStats]").inner_text[/([0-9,]+)/,1].gsub(',','').to_i
+      doc = Nokogiri::HTML( open( "https://www.google.com/search?q=#{terms}&safe=active" ) )
+      c = doc.at("div[@id*=resultStats]").inner_text[/([0-9,]+)/,1].gsub(/\.,/, '').to_i
+      puts c
+      c
     end
 
     def handle_privmsg( message )

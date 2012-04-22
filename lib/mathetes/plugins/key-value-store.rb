@@ -12,10 +12,16 @@ module Mathetes; module Plugins
        @h.transaction {
          @h.roots.each { |root|
            item = eval(root)
-           keys.push(item[:key]) if item[:channel] == message.channel.to_s
+           keys.push(item[:key]) if message.channel.nil? || item[:channel] == message.channel.to_s
          }
        }
-       message.answer "I know the following keys: #{keys.sort.join(', ')}"
+                       
+       msg = "I know the following keys: #{keys.sort.join(', ')}"
+       if message.channel.nil?
+         @mathetes.say msg, message.from.nick
+       else
+         message.answer msg
+       end
       end
       mathetes.hook_privmsg( :regexp => /^(!i(nfo)?\b|\?\w+)(\s+\S+)?/ ) do |message|
         if message.text =~ /^(!i\s+|!info\s+|\?)(\w+)=(.+)/
